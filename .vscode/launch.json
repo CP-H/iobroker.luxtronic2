@@ -10,8 +10,7 @@
             "name": "Launch ioBroker Adapter",
             "skipFiles": ["<node_internals>/**"],
             "args": ["--debug", "0"],
-            "program": "node_modules/iobroker.luxtronik2/build/main.js",
-            "cwd": "${workspaceFolder}/.dev-server/default"
+            "program": "${workspaceFolder}/build/main.js"
         }
     ]
 }
