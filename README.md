@@ -26,7 +26,8 @@ Connects to Luxtronik 2 heatpump controllers over LAN and WebSocket
 	### **WORK IN PROGRESS**
    npm run release
 -->
-### 0.5.0 (2023-12-20)
+
+### **WORK IN PROGRESS**
 
 -   Updated to the latest luxtronik2 dependency
 -   add some datapoints

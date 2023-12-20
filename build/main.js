@@ -177,7 +177,7 @@ class Luxtronik2 extends utils.Adapter {
         this.luxtronik.read((err, data) => {
             var _a;
             if (err) {
-                if (err.message === 'heatpump busy') {
+                if (err.message.startsWith('heatpump busy')) {
                     this.log.info('Heatpump busy, will retry later');
                 }
                 else {
