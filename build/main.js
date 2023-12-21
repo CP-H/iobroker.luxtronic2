@@ -1,4 +1,5 @@
 "use strict";
+
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -6,11 +7,13 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
+
 var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
     Object.defineProperty(o, "default", { enumerable: true, value: v });
 }) : function(o, v) {
     o["default"] = v;
 });
+
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -18,9 +21,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+
 Object.defineProperty(exports, "__esModule", { value: true });
 /*
  * Created with @iobroker/create-adapter v1.30.1
@@ -32,6 +37,7 @@ const ws_1 = __importDefault(require("ws"));
 const xml2js_1 = require("xml2js");
 const lux_meta_1 = require("./lux-meta");
 const WATCHDOG_RETRIES = 3;
+
 class Luxtronik2 extends utils.Adapter {
     constructor(options = {}) {
         super({
@@ -52,6 +58,7 @@ class Luxtronik2 extends utils.Adapter {
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
     }
+
     /**
      * Is called when databases are connected and adapter received configuration.
      */
@@ -71,6 +78,7 @@ class Luxtronik2 extends utils.Adapter {
         }
         this.watchdogInterval = setInterval(() => this.handleWatchdog(), this.config.refreshInterval * 1000);
     }
+
     async cleanupObjects() {
         const allObjects = await this.getAdapterObjectsAsync();
         // remove all timestamp entries that were created before version 0.2 (Fehlerspeicher and Abschaltungen)
@@ -78,6 +86,7 @@ class Luxtronik2 extends utils.Adapter {
             .filter((id) => !!id.match(/\.\d\d-\d\d-\d\d-\d\d:\d\d:\d\d$/))
             .map((id) => this.delForeignObjectAsync(id)));
     }
+
     createWebSocket() {
         var _a;
         if (!this.config.port) {
@@ -102,7 +111,8 @@ class Luxtronik2 extends utils.Adapter {
                 (_d = this.webSocket) === null || _d === void 0 ? void 0 : _d.close();
             }
         });
-        this.webSocket.on('message', (msg) => this.handleWsMessage(msg));
+        this.webSocket.on('message', (msg) => 
+            this.handleWsMessage(msg));
         this.webSocket.on('error', (err) => {
             var _a;
             if (this.closing) {
@@ -128,6 +138,7 @@ class Luxtronik2 extends utils.Adapter {
             }
         });
     }
+
     async createLuxTreeAsync() {
         for (const sectionName in lux_meta_1.luxMeta) {
             const section = lux_meta_1.luxMeta[sectionName];
@@ -164,6 +175,7 @@ class Luxtronik2 extends utils.Adapter {
             }
         }
     }
+
     createLuxtronikConnection(host, port) {
         if (!port) {
             return;
@@ -172,6 +184,7 @@ class Luxtronik2 extends utils.Adapter {
         this.luxtronik = new luxtronik2_1.default.createConnection(host, port);
         this.requestLuxtronikData();
     }
+
     requestLuxtronikData() {
         this.luxFailCounter = 0;
         this.luxtronik.read((err, data) => {
@@ -195,6 +208,7 @@ class Luxtronik2 extends utils.Adapter {
             });
         });
     }
+
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      */
@@ -217,6 +231,7 @@ class Luxtronik2 extends utils.Adapter {
             callback();
         }
     }
+
     handleWatchdog() {
         var _a, _b;
         if (this.config.port) {
@@ -240,6 +255,7 @@ class Luxtronik2 extends utils.Adapter {
             this.luxFailCounter++;
         }
     }
+
     /**
      * Is called if a subscribed state changes
      */
@@ -278,6 +294,7 @@ class Luxtronik2 extends utils.Adapter {
             this.handleNextUpdate();
         }
     }
+
     async handleLuxtronikDataAsync(data) {
         try {
             for (const sectionName in data) {
@@ -344,6 +361,7 @@ class Luxtronik2 extends utils.Adapter {
             this.luxRefreshTimeout = setTimeout(() => this.requestLuxtronikData(), this.config.refreshInterval * 1000);
         }
     }
+
     handleNextUpdate() {
         if (this.requestedUpdates.length === 0) {
             return false;
@@ -373,6 +391,7 @@ class Luxtronik2 extends utils.Adapter {
         this.requestNextContent();
         return true;
     }
+
     handleWsMessage(message) {
         this.handleWsMessageAsync(message).catch((error) => {
             var _a;
@@ -380,6 +399,7 @@ class Luxtronik2 extends utils.Adapter {
             (_a = this.getSentry()) === null || _a === void 0 ? void 0 : _a.captureException(error, { extra: { message } });
         });
     }
+
     async handleWsMessageAsync(msg) {
         var _a, _b, _c, _d, _e;
         const message = await (0, xml2js_1.parseStringPromise)(msg);
@@ -416,53 +436,65 @@ class Luxtronik2 extends utils.Adapter {
             const navigationId = this.getItemId(navigationItem);
             const sectionIds = [];
             let shouldSave = false;
+            
             for (let i = 0; i < message.Content.item.length; i++) {
-                const section = message.Content.item[i];
-                const sectionHandler = this.createHandler(section, navigationId, sectionIds);
-                if (!sectionHandler) {
-                    continue;
-                }
-                if (!this.handlers[sectionHandler.id]) {
-                    this.handlers[sectionHandler.id] = sectionHandler;
-                    await sectionHandler.extendObjectAsync();
-                }
-                if (sectionHandler instanceof TimeLogSectionHandler) {
-                    // time log sections are actually states
-                    await sectionHandler.setStateAsync();
-                    continue;
-                }
-                const itemIds = [];
-                for (let j = 0; j < section.item.length; j++) {
-                    const item = section.item[j];
-                    try {
-                        const itemHandler = this.createHandler(item, sectionHandler.id, itemIds);
-                        if (!itemHandler) {
-                            continue;
-                        }
-                        if (!this.handlers[itemHandler.id]) {
-                            this.log.silly(`Creating ${itemHandler.id}`);
-                            await itemHandler.extendObjectAsync();
-                            this.handlers[itemHandler.id] = itemHandler;
-                        }
-                        if (this.requestedUpdates.length === 0) {
-                            this.log.silly(`Setting state of ${itemHandler.id}`);
-                            await itemHandler.setStateAsync();
-                        }
-                        else {
-                            const updateIndex = this.requestedUpdates.findIndex((ch) => ch.id === itemHandler.id);
-                            if (updateIndex >= 0) {
-                                const cmd = itemHandler.createSetCommand(this.requestedUpdates[updateIndex].value);
-                                this.log.debug(`Sending ${cmd}`);
-                                (_a = this.getSentry()) === null || _a === void 0 ? void 0 : _a.addBreadcrumb({ type: 'http', category: 'ws', data: { url: cmd } });
-                                (_b = this.webSocket) === null || _b === void 0 ? void 0 : _b.send(cmd);
-                                this.requestedUpdates.splice(updateIndex);
-                                shouldSave = true;
+
+                let hasSublevel = !message.Content.item[i].item[0]?.value;
+                let count = 1;
+                let section = message.Content.item[i];
+                if (hasSublevel)
+                    count = message.Content.item[i].item.length;
+                
+                for (let k = 0; k < count; k++) {
+                    if (hasSublevel)
+                        section = message.Content.item[i].item[k];
+                
+                    const sectionHandler = this.createHandler(section, navigationId, sectionIds);
+                    if (!sectionHandler) {
+                        continue;
+                    }
+                    if (!this.handlers[sectionHandler.id]) {
+                        this.handlers[sectionHandler.id] = sectionHandler;
+                        await sectionHandler.extendObjectAsync();
+                    }
+                    if (sectionHandler instanceof TimeLogSectionHandler) {
+                        // time log sections are actually states
+                        await sectionHandler.setStateAsync();
+                        continue;
+                    }
+                    const itemIds = [];
+                    for (let j = 0; j < section.item.length; j++) {
+                        const item = section.item[j];
+                        try {
+                            const itemHandler = this.createHandler(item, sectionHandler.id, itemIds);
+                            if (!itemHandler) {
+                                continue;
+                            }
+                            if (!this.handlers[itemHandler.id]) {
+                                this.log.silly(`Creating ${itemHandler.id}`);
+                                await itemHandler.extendObjectAsync();
+                                this.handlers[itemHandler.id] = itemHandler;
+                            }
+                            if (this.requestedUpdates.length === 0) {
+                                this.log.silly(`Setting state of ${itemHandler.id}`);
+                                await itemHandler.setStateAsync();
+                            }
+                            else {
+                                const updateIndex = this.requestedUpdates.findIndex((ch) => ch.id === itemHandler.id);
+                                if (updateIndex >= 0) {
+                                    const cmd = itemHandler.createSetCommand(this.requestedUpdates[updateIndex].value);
+                                    this.log.debug(`Sending ${cmd}`);
+                                    (_a = this.getSentry()) === null || _a === void 0 ? void 0 : _a.addBreadcrumb({ type: 'http', category: 'ws', data: { url: cmd } });
+                                    (_b = this.webSocket) === null || _b === void 0 ? void 0 : _b.send(cmd);
+                                    this.requestedUpdates.splice(updateIndex);
+                                    shouldSave = true;
+                                }
                             }
                         }
-                    }
-                    catch (error) {
-                        this.log.error(`Couldn't handle '${sectionHandler.id}' -> '${item.name[0]}': ${error}`);
-                        (_c = this.getSentry()) === null || _c === void 0 ? void 0 : _c.captureException(error, { extra: { section: sectionHandler.id, item } });
+                        catch (error) {
+                            this.log.error(`Couldn't handle '${sectionHandler.id}' -> '${item.name[0]}': ${error}`);
+                            (_c = this.getSentry()) === null || _c === void 0 ? void 0 : _c.captureException(error, { extra: { section: sectionHandler.id, item } });
+                        }
                     }
                 }
             }
@@ -477,15 +509,18 @@ class Luxtronik2 extends utils.Adapter {
             }
         }
     }
+
     requestAllContent() {
         this.wsFailCounter = 0;
         this.currentNavigationSection = -1;
         this.requestNextContent();
     }
+
     requestNextContent() {
         var _a;
         this.currentNavigationSection++;
         if (this.currentNavigationSection >= this.navigationSections.length) {
+            //done
             this.wsRefreshTimeout = setTimeout(() => this.requestAllContent(), this.config.refreshInterval * 1000);
             return;
         }
@@ -493,9 +528,11 @@ class Luxtronik2 extends utils.Adapter {
         this.log.debug('Getting ' + id);
         (_a = this.webSocket) === null || _a === void 0 ? void 0 : _a.send('GET;' + id);
     }
+
     getItemId(item) {
         return item.name[0].replace(/[\][*,;'"`<>\\?/._ \-]+/g, '-').replace(/(^-+|-+$)/g, '');
     }
+
     createHandler(item, parentId, existingIds) {
         if (item.name[0] === '---') {
             return undefined;
@@ -536,9 +573,11 @@ class Luxtronik2 extends utils.Adapter {
         }
         return new ReadOnlyHandler(id, item, this);
     }
+
     async setStateValueAsync(id, value) {
         await this.setStateChangedAsync(id, value, true);
     }
+
     getSentry() {
         if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
             const sentryInstance = this.getPluginInstance('sentry');
@@ -548,12 +587,14 @@ class Luxtronik2 extends utils.Adapter {
         }
     }
 }
+
 class ItemHandler {
     constructor(id, item, adapter) {
         this.id = id;
         this.item = item;
         this.adapter = adapter;
     }
+
     unit2role(unit, readOnly) {
         const kind = readOnly ? 'value' : 'level';
         switch (unit) {
@@ -573,6 +614,7 @@ class ItemHandler {
         }
     }
 }
+
 class SectionHandler extends ItemHandler {
     async extendObjectAsync() {
         await this.adapter.extendObjectAsync(this.id, {
@@ -590,6 +632,7 @@ class SectionHandler extends ItemHandler {
         throw new Error('createSetCommand() not supported on section.');
     }
 }
+
 class TimeLogSectionHandler extends SectionHandler {
     async extendObjectAsync() {
         await this.adapter.extendObjectAsync(this.id, {
@@ -609,6 +652,7 @@ class TimeLogSectionHandler extends SectionHandler {
         await this.adapter.setStateValueAsync(this.id, JSON.stringify(value));
     }
 }
+
 class ReadOnlyHandler extends ItemHandler {
     constructor() {
         super(...arguments);
@@ -643,6 +687,7 @@ class ReadOnlyHandler extends ItemHandler {
             native: this.item,
         });
     }
+
     async setStateAsync() {
         const value = this.item.value[0];
         const match = value.match(this.numberUnitMatch);
@@ -668,6 +713,7 @@ class ReadOnlyHandler extends ItemHandler {
         throw new Error('createSetCommand() not supported on read-only value.');
     }
 }
+
 class SelectHandler extends ItemHandler {
     async extendObjectAsync() {
         const states = {};
@@ -694,6 +740,7 @@ class SelectHandler extends ItemHandler {
         return `SET;set_${this.item.$.id};${value}`;
     }
 }
+
 class NumberHandler extends ItemHandler {
     async extendObjectAsync() {
         const unit = this.item.unit[0].trim();
@@ -721,6 +768,7 @@ class NumberHandler extends ItemHandler {
         const raw = parseInt(this.item.raw[0]);
         await this.adapter.setStateValueAsync(this.id, raw / div);
     }
+
     createSetCommand(value) {
         if (typeof value === 'number') {
             const div = parseInt(this.item.div[0]);
@@ -734,6 +782,7 @@ class NumberHandler extends ItemHandler {
         throw new Error('createSetCommand() supports only number value.');
     }
 }
+
 if (module.parent) {
     // Export the constructor in compact mode
     module.exports = (options) => new Luxtronik2(options);
