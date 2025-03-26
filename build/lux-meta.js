@@ -11,7 +11,6 @@ exports.luxMeta = {
         temperature_outside: { role: 'value.temperature', type: 'number', unit: '°C' },
         temperature_outside_avg: { role: 'value.temperature', type: 'number', unit: '°C' },
         temperature_hot_water: { role: 'value.temperature', type: 'number', unit: '°C' },
-        temperature_hot_water_target: { role: 'value.temperature', type: 'number', unit: '°C' },
         temperature_heat_source_in: { role: 'value.temperature', type: 'number', unit: '°C' },
         temperature_heat_source_out: { role: 'value.temperature', type: 'number', unit: '°C' },
         temperature_mixer1_flow: { role: 'value.temperature', type: 'number', unit: '°C' },
@@ -252,7 +251,13 @@ exports.luxMeta = {
             writeName: 'return_temperature_hysteresis',
         },
         heatSourcedefrostAirEnd: { role: 'value', type: 'number' },
-        temperature_hot_water_target: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_hot_water_target: {
+            role: 'value.temperature',
+            type: 'number',
+            unit: '°C',
+            min: 30,
+            max: 65,
+        },
         cooling_operation_mode: { role: 'value', type: 'number', writeName: 'cooling_operation_mode' },
         cooling_release_temperature: {
             role: 'value.temperature',
