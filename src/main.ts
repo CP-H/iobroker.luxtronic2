@@ -137,7 +137,7 @@ class Luxtronik2 extends utils.Adapter {
                 return;
             }
             this.log.error('Got unexpected close event');
-            this.getSentry()?.captureMessage('Got unexpected close event', SentryNode.Severity.Warning);
+            this.getSentry()?.captureMessage('Got unexpected close event', 'warning');
 
             // not available in unit tests
             if (this.restart) {
@@ -246,7 +246,7 @@ class Luxtronik2 extends utils.Adapter {
             if (this.wsFailCounter >= WATCHDOG_RETRIES) {
                 const msg = `Didn't receive data from WebSocket after ${this.wsFailCounter} retries, restarting adapter`;
                 this.log.error(msg);
-                this.getSentry()?.captureMessage(msg, SentryNode.Severity.Error);
+                this.getSentry()?.captureMessage(msg, 'error');
                 this.restart();
                 return;
             }
@@ -258,7 +258,7 @@ class Luxtronik2 extends utils.Adapter {
             if (this.luxFailCounter >= WATCHDOG_RETRIES) {
                 const msg = `Didn't receive data from Lux port after ${this.luxFailCounter} retries, restarting adapter`;
                 this.log.error(msg);
-                this.getSentry()?.captureMessage(msg, SentryNode.Severity.Error);
+                this.getSentry()?.captureMessage(msg, 'error');
                 this.restart();
                 return;
             }
@@ -321,7 +321,7 @@ class Luxtronik2 extends utils.Adapter {
                         const sentry = this.getSentry();
                         sentry?.withScope((scope) => {
                             scope.setExtra('section', JSON.stringify(section, null, 2));
-                            sentry.captureMessage(msg, SentryNode.Severity.Warning);
+                            sentry.captureMessage(msg, 'warning');
                         });
                     }
                     continue;
@@ -341,7 +341,7 @@ class Luxtronik2 extends utils.Adapter {
                             const sentry = this.getSentry();
                             sentry?.withScope((scope) => {
                                 scope.setExtra('value', value);
-                                sentry.captureMessage(msg, SentryNode.Severity.Warning);
+                                sentry.captureMessage(msg, 'warning');
                             });
                         }
                         continue;
@@ -391,7 +391,7 @@ class Luxtronik2 extends utils.Adapter {
                 const sentry = this.getSentry();
                 sentry?.withScope((scope) => {
                     scope.setExtra('id', id);
-                    sentry.captureMessage(msg, SentryNode.Severity.Warning);
+                    sentry.captureMessage(msg, 'warning');
                 });
             }
             return this.handleNextUpdate();
@@ -553,7 +553,7 @@ class Luxtronik2 extends utils.Adapter {
                 const sentry = this.getSentry();
                 sentry?.withScope((scope) => {
                     scope.setExtra('item', JSON.stringify(item, null, 2));
-                    sentry.captureMessage(msg, SentryNode.Severity.Warning);
+                    sentry.captureMessage(msg, 'warning');
                 });
             }
             return undefined;

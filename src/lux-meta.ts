@@ -166,6 +166,13 @@ export const luxMeta: Record<string, Record<string, MetaInfo | undefined>> = {
         errors: undefined,
         error_count: undefined,
         switch_off: undefined,
+        NDin_pressure: { role: 'text', type: 'string' },
+        HDin_pressure: { role: 'text', type: 'string' },
+        temperature_overheating_target: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_overheating: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_compressor1_heating: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_intake_compressor1: { role: 'value.temperature', type: 'number', unit: 'K' },
+        temperature_intake_evaporation: { role: 'value.temperature', type: 'number', unit: 'K' },
     },
     parameters: {
         heating_temperature: {
@@ -294,6 +301,11 @@ export const luxMeta: Record<string, Record<string, MetaInfo | undefined>> = {
         solarPumpDeaerate: { role: 'indicator', type: 'boolean' },
         hotwaterTemperatureForerun2ndCompressor: { role: 'value.temperature', type: 'number', unit: '°C' },
         heatingTemperatureOutside2ndCompressor: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_ZWE_possible: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_outdoor_min: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_outdoor_max: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_return_limit: { role: 'value.temperature', type: 'number', unit: '°C' },
+        temperature_supply_limit: { role: 'value.temperature', type: 'number', unit: '°C' },
         // currently we ignore all timer tables
         heatingOperationTimerTableSelected: undefined,
         heatingOperationTimerTableSelectedString: undefined,
